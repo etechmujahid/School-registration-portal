@@ -38,3 +38,4 @@ src/
 
 Dashboard routes redirect to `/login` when signed out; auth routes redirect to `/dashboard` when signed in.
 # School-registration-portal
+# School-registration-portal
