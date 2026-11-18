@@ -4,10 +4,31 @@ import { Check, Download, Eye, X } from 'lucide-react'
 import { Avatar, Badge, Button, Card } from '../../../components/ui'
 import type { Application, ApplicationStatus } from '../../../data/dummy'
 import { applications as seed, statusTone } from '../../../data/dummy'
+import type { CsvColumn } from '../../../lib/csv'
+import { downloadCsv, toCsv } from '../../../lib/csv'
 import { EmptyRow, PageHeader, Pagination, SearchBox, Tabs, formatDate, td, th } from '../components/shared'
 
 const TABS = ['All', 'Pending', 'Under Review', 'Approved', 'Rejected'] as const
 type Tab = (typeof TABS)[number]
+
+const CSV_COLUMNS: CsvColumn<Application>[] = [
+  { header: 'Application ID', value: (a) => a.id },
+  { header: 'Applicant', value: (a) => a.applicant },
+  { header: 'Grade', value: (a) => a.grade },
+  { header: 'Parent / Guardian', value: (a) => a.parent },
+  { header: 'Email', value: (a) => a.email },
+  { header: 'Previous school', value: (a) => (a.previousSchool === '—' ? '' : a.previousSchool) },
+  { header: 'Submitted on', value: (a) => a.submittedOn },
+  { header: 'Status', value: (a) => a.status },
+]
+
+/** Exports exactly what the table shows: current tab, search, and any status changes. */
+function exportApplications(rows: Application[], tab: Tab) {
+  const now = new Date()
+  const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  const scope = tab === 'All' ? '' : `-${tab.toLowerCase().replace(/\s+/g, '-')}`
+  downloadCsv(`applications${scope}-${date}.csv`, toCsv(rows, CSV_COLUMNS))
+}
 
 export default function ApplicationsPage() {
   const [items, setItems] = useState<Application[]>(seed)
@@ -38,7 +59,12 @@ export default function ApplicationsPage() {
         title="Applications"
         subtitle="Review and process admission applications for the upcoming term."
         actions={
-          <Button variant="secondary">
+          <Button
+            variant="secondary"
+            onClick={() => exportApplications(filtered, tab)}
+            disabled={filtered.length === 0}
+            title={filtered.length === 0 ? 'No applications to export' : `Export ${filtered.length} application${filtered.length === 1 ? '' : 's'} as CSV`}
+          >
             <Download className="h-4 w-4" /> Export CSV
           </Button>
         }
