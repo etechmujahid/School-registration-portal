@@ -45,9 +45,8 @@ Steps:
      with curl --resolve.
 5. Git (only if there are code changes to keep): commit on a feature branch, then fast-forward
    main. This machine has no git identity, so pass -c user.name/-c user.email using the author
-   of the existing commits. Ask before pushing. A push may fail with 403 because the saved
-   GitHub login is "etech-portals", which has no write access to
-   etechmujahid/School-registration-portal. If so, just report it.
+   of the existing commits. Ask before pushing. The saved GitHub login "etech-portals" can push
+   to etechmujahid/School-registration-portal. If a push fails, report the error.
 6. Finish with a short report: live URL, what was deployed (commit or bundle hash), the
    verification results, and anything not done.
 ```
